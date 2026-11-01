@@ -1,27 +1,60 @@
-# WildAnySplat
+<div align="center">
 
-**Feed-Forward 3D Gaussian Splatting in the Wild**  
-*SIGGRAPH Asia 2026*
+<h1>WildAnySplat: Feed-Forward 3D Gaussian Splatting in the Wild</h1>
 
-[Project website](https://wildanysplat.github.io/) · [Paper (SIGGRAPH Asia listing)](https://sa2026.conference-schedule.org/presentation/?id=papers_2148&sess=sess109) · [Model weights (Hugging Face)](https://huggingface.co/richardoshaw/WildAnySplat) · [Source code](https://github.com/wildanysplat/WildAnySplat)
+<p>
+  <a href="https://scholar.google.com/citations?user=9qqtzK4AAAAJ&hl=en">Richard Shaw</a> &nbsp;·&nbsp;
+  <a href="https://scholar.google.com/citations?user=fMmoHX0AAAAJ&hl=en">Arthur Moreau</a> &nbsp;·&nbsp;
+  <a href="https://apapaion.github.io/">Athanasios Papaioannou</a><br>
+  <a href="https://thomas-tanay.github.io/">Thomas Tanay</a> &nbsp;·&nbsp;
+  <a href="https://zhangzhensong.github.io/">Zhang Zhensong</a> &nbsp;·&nbsp;
+  <a href="https://perezpellitero.github.io/">Eduardo Pérez-Pellitero</a>
+</p>
 
-WildAnySplat reconstructs a 3D Gaussian representation from multiple images captured under challenging real-world conditions, including transient occluders and changes in appearance. This repository provides a **standalone, inference-only demo** for reconstructing a scene from an image folder or a video, with no training pipeline or dataset setup required.
+<p>
+  <strong>Huawei Noah's Ark Lab · London, UK</strong><br>
+  <strong>SIGGRAPH Asia 2026 · Conference Papers</strong>
+</p>
 
-The demo exports a Gaussian Splat PLY, predicted cameras, rendered input views, and an interpolated novel-view synthesis (NVS) video.
+<p>
+  <a href="https://wildanysplat.github.io/wildanysplat.pdf"><img alt="Paper PDF" src="https://img.shields.io/badge/Paper-PDF-D35400?style=for-the-badge&logo=adobeacrobatreader&logoColor=white"></a>
+  <a href="https://wildanysplat.github.io/"><img alt="Project Website" src="https://img.shields.io/badge/Project-Website-2C3E50?style=for-the-badge&logo=googlechrome&logoColor=white"></a>
+  <a href="https://wildanysplat.github.io/#comparisons"><img alt="Video Results" src="https://img.shields.io/badge/Results-Videos-2980B9?style=for-the-badge&logo=youtube&logoColor=white"></a>
+  <a href="https://huggingface.co/richardoshaw/WildAnySplat"><img alt="Model Weights on Hugging Face" src="https://img.shields.io/badge/Model-Weights-FFCA28?style=for-the-badge&logo=huggingface&logoColor=black"></a>
+</p>
 
-The paper link above currently opens the official SIGGRAPH Asia conference listing; it can be replaced with the ACM article link when the DOI landing page is publicly available.
+<p><strong>Robust 3D reconstruction from in-the-wild images — in a single feed-forward pass.</strong></p>
 
-## Features
+<p><em>Official inference-only implementation and pretrained weights.</em></p>
 
-- **Images or video:** reconstruct from a folder of RGB images or uniformly sampled video frames.
-- **Feed-forward reconstruction:** estimate Gaussians and camera parameters without COLMAP or supplied poses.
-- **View synthesis:** save input-view renders, side-by-side comparisons, and an interpolated RGB/depth video.
-- **Viewer-ready exports:** open `gaussians.ply` in [SuperSplat](https://superspl.at/editor); optionally use `points_rgb.ply` as an RGB point cloud in MeshLab.
-- **Opacity filtering:** exclude nearly transparent Gaussians from PLY exports without changing the model's rendered results.
+</div>
 
-## Installation
+---
 
-**Requirements:** Linux, Python 3.10 or newer, an NVIDIA CUDA GPU with sufficient VRAM, and a compatible CUDA-enabled PyTorch installation. Memory requirements depend on the number of input views.
+WildAnySplat reconstructs **3D Gaussian Splats** from uncalibrated multi-view images captured in the wild, where transient objects, illumination differences, and camera-dependent appearance can make reconstruction challenging. Its teacher–student training framework learns to produce more consistent scene geometry and colours despite these variations.
+
+This repository contains a **standalone inference demo**. Give it a folder of images or a video; it predicts camera parameters and Gaussians, renders the input views, and produces a smooth novel-view synthesis (NVS) video. **No training code, COLMAP, input camera poses, or dataset setup is required.**
+
+<p align="center">
+  <a href="https://wildanysplat.github.io/">
+    <img src="https://wildanysplat.github.io/WildAnySplat_method.png" alt="WildAnySplat method overview: teacher–student training, transient-aware fusion and appearance modelling" width="900">
+  </a>
+</p>
+<p align="center"><sub><b>Method overview.</b> WildAnySplat learns transient-robust 3D Gaussians using a frozen clean-image teacher and an in-the-wild student. The diagram describes the paper framework; the released inference checkpoint uses transient-aware fusion with its bilateral-grid head disabled.</sub></p>
+
+## ✨ Highlights
+
+- **📷 Images or video** — reconstruct a scene from an image directory or uniformly sampled video frames.
+- **⚡ Feed-forward 3DGS** — infer Gaussians and camera parameters directly from uncalibrated views.
+- **🎬 Rendered results** — generate input-view reconstructions, visual comparisons, and interpolated RGB/depth NVS videos.
+- **🧊 Gaussian exports** — open `gaussians.ply` in [SuperSplat](https://superspl.at/editor); export an RGB point cloud for MeshLab.
+- **🧹 Opacity pruning** — omit nearly transparent Gaussians from PLY exports without changing neural rendering.
+
+## 🚀 Quick start
+
+### 1. Install
+
+**Requirements:** Linux, Python 3.10+, an NVIDIA GPU with CUDA and sufficient VRAM, and a compatible CUDA-enabled PyTorch installation. Memory usage depends on the number of input views.
 
 ```bash
 git clone https://github.com/wildanysplat/WildAnySplat.git
@@ -31,33 +64,22 @@ conda create -n wildanysplat python=3.10 -y
 conda activate wildanysplat
 ```
 
-Install [PyTorch and torchvision](https://pytorch.org/get-started/locally/) for your CUDA version, then install [`torch-scatter`](https://pytorch-geometric.readthedocs.io/en/latest/notes/installation.html) for the **same** PyTorch/CUDA combination.
+Install [PyTorch and torchvision](https://pytorch.org/get-started/locally/) for your CUDA version and [`torch-scatter`](https://pytorch-geometric.readthedocs.io/en/latest/notes/installation.html) for the **same** PyTorch/CUDA combination. Then:
 
 ```bash
 pip install -r requirements.txt
 
-# Install the VGGT-Omega dependency.
+# VGGT-Omega dependency
 git clone https://github.com/facebookresearch/vggt-omega.git ../vggt-omega
 pip install -r ../vggt-omega/requirements.txt
 pip install -e ../vggt-omega
 ```
 
-The repository pins `gsplat==1.4.0`. Refer to the [VGGT-Omega repository](https://github.com/facebookresearch/vggt-omega) for its installation requirements and licence conditions.
+The inference release uses `gsplat==1.4.0`. See the [VGGT-Omega repository](https://github.com/facebookresearch/vggt-omega) for its installation and licensing requirements.
 
-## Model weights
+### 2. Run inference
 
-The trained WildAnySplat model is hosted on **[Hugging Face: richardoshaw/WildAnySplat](https://huggingface.co/richardoshaw/WildAnySplat)**. This release uses two files:
-
-```text
-model.safetensors        # Trained model parameters
-inference_config.yaml    # Matching inference architecture configuration
-```
-
-You can let the demo download the files automatically, or download them yourself. **No model weights are stored in the GitHub repository.**
-
-### Option A — Download automatically (recommended)
-
-Pass `--hf-repo richardoshaw/WildAnySplat` to the demo. It fetches `model.safetensors` and `inference_config.yaml` using `huggingface_hub` and caches them locally, so you do not need to manage checkpoint paths:
+**From a folder of images:**
 
 ```bash
 python demo.py \
@@ -67,11 +89,54 @@ python demo.py \
   --output outputs/scene
 ```
 
-The first run downloads the weights; subsequent runs can reuse the Hugging Face cache.
+**From a video:**
 
-### Option B — Download weights to `checkpoints/`
+```bash
+python demo.py \
+  --video /path/to/scene.mp4 \
+  --hf-repo richardoshaw/WildAnySplat \
+  --num-views 12 \
+  --output outputs/video_scene
+```
 
-If you prefer to keep the files inside your project directory, install the Hugging Face CLI and download both files:
+The first run **downloads the pretrained model and inference configuration automatically** from [Hugging Face](https://huggingface.co/richardoshaw/WildAnySplat); subsequent runs reuse the local cache.
+
+> **Input tips:** Use at least two views of the **same scene**, preferably with good overlap and a meaningful sequence of camera positions. Image names are sorted naturally before sampling; video frames are sampled throughout the clip. Input images are resized and centre-cropped to 448 × 448.
+
+### 3. Explore the results
+
+Each run writes outputs similar to:
+
+```text
+outputs/scene/
+├── gaussians.ply              # Gaussian Splats (SuperSplat-compatible)
+├── points_rgb.ply             # Conventional coloured point cloud (MeshLab)
+├── cameras.json               # Predicted camera information and source filenames
+├── cameras.npz                # Camera matrices and intrinsics
+├── rendered_input_views/     # PNG renders at the predicted input cameras
+├── input_vs_render/          # Side-by-side input and rendered PNGs
+├── rgb.mp4                   # Interpolated novel-view synthesis video
+├── depth.mp4                 # Colourised depth video
+├── nvs_cameras.npz           # Interpolated NVS camera parameters
+└── run_summary.json          # Run settings and export statistics
+```
+
+For video input, the demo also saves `sampled_video_frames/`. Optional outputs depend on the selected flags.
+
+## 🤗 Model weights
+
+**Pretrained checkpoint:** [richardoshaw/WildAnySplat](https://huggingface.co/richardoshaw/WildAnySplat)
+
+The model repository contains the two files required for inference:
+
+| File | Purpose |
+| :--- | :--- |
+| `model.safetensors` | Trained model parameters |
+| `inference_config.yaml` | Matching inference architecture settings |
+
+**Automatic download** (recommended): use `--hf-repo richardoshaw/WildAnySplat` as in the quick-start commands above.
+
+**Manual download:**
 
 ```bash
 pip install -U huggingface_hub
@@ -81,55 +146,7 @@ hf download richardoshaw/WildAnySplat \
   --local-dir checkpoints
 ```
 
-The resulting layout is:
-
-```text
-WildAnySplat/
-└── checkpoints/
-    ├── model.safetensors
-    └── inference_config.yaml
-```
-
-Then pass the local paths:
-
-```bash
-python demo.py \
-  --images /path/to/scene/images \
-  --checkpoint checkpoints/model.safetensors \
-  --config checkpoints/inference_config.yaml \
-  --num-views 12 \
-  --output outputs/scene
-```
-
-For private or gated Hugging Face repositories, authenticate first with `hf auth login`. Public models do not require login. You can also download the files individually from the [model repository](https://huggingface.co/richardoshaw/WildAnySplat/tree/main).
-
-## Quick start
-
-### Reconstruct from a folder of images
-
-```bash
-python demo.py \
-  --images examples/scene/images \
-  --hf-repo richardoshaw/WildAnySplat \
-  --num-views 12 \
-  --output outputs/scene
-```
-
-Images are sorted by filename (with natural numeric ordering), and up to `--num-views` images are uniformly selected. Use **at least two views of the same scene**, preferably with good overlap.
-
-### Reconstruct from a video
-
-```bash
-python demo.py \
-  --video examples/scene.mp4 \
-  --hf-repo richardoshaw/WildAnySplat \
-  --num-views 12 \
-  --output outputs/video_scene
-```
-
-Video frames are sampled throughout the clip. For best results, use footage with camera motion around a mostly static scene.
-
-### Use locally downloaded weights
+Then run with the local checkpoint:
 
 ```bash
 python demo.py \
@@ -140,84 +157,63 @@ python demo.py \
   --output outputs/local_scene
 ```
 
-Using `--hf-repo` automatically downloads both model files into the Hugging Face cache. A CUDA GPU is required for inference.
+Public models do not require authentication. For private or gated access, run `hf auth login` first. **The model weights are not stored in this GitHub repository.**
 
-## Outputs
+## 🛠️ Inference options
 
-By default, each run produces:
-
-```text
-outputs/scene/
-├── gaussians.ply                 # Gaussian Splat model
-├── points_rgb.ply                # RGB-vertex point cloud
-├── cameras.json                 # Camera metadata and source filenames
-├── cameras.npz                  # Predicted camera matrices and intrinsics
-├── rendered_input_views/        # Renders at predicted input cameras
-├── input_vs_render/             # Input / reconstruction comparisons
-├── rgb.mp4                      # Novel-view synthesis trajectory
-├── depth.mp4                    # Colourised depth trajectory
-├── nvs_cameras.npz              # Interpolated trajectory cameras
-└── run_summary.json             # Run settings and export statistics
-```
-
-For video inputs, the output also includes `sampled_video_frames/`. Additional optional outputs depend on the command-line flags and model configuration.
-
-### Gaussian export and opacity filtering
-
-`gaussians.ply` is a standard Gaussian Splat PLY, with spherical-harmonic coefficients, log-scales, logit opacities, and quaternion rotations. It is the file to use with **SuperSplat** and other Gaussian Splat viewers. The model renders internally with SH degree 4; the PLY defaults to **SH degree 3** for broader viewer compatibility.
-
-By default, the exporter removes invalid Gaussians and those with opacity below **1/255 (approximately 0.00392)**. To prune more aggressively:
-
-```bash
-python demo.py \
-  --images examples/scene/images \
-  --hf-repo richardoshaw/WildAnySplat \
-  --min-opacity 0.01 \
-  --output outputs/scene_pruned
-```
-
-This filtering affects **only exported PLY files**, not the Gaussian set used for the PNG and video renders. `points_rgb.ply` is a conventional RGB point cloud rather than a Gaussian Splat model.
-
-## Useful options
-
-| Option | Description | Default |
-| --- | --- | --- |
-| `--num-views N` | Maximum number of input views | `12` |
+| Argument | Description | Default |
+| :--- | :--- | :--- |
+| `--num-views N` | Maximum number of input frames/views | `12` |
 | `--min-opacity T` | Minimum opacity for exported Gaussians | `1/255` |
-| `--ply-sh-degree N` | Spherical-harmonic degree in the PLY (0–4) | `3` |
-| `--dc-only` | Export only SH DC colours to the PLY | Off |
-| `--nvs-between N` | Intermediate cameras per adjacent input-view pair | `10` |
-| `--nvs-fps N` | Output NVS video frame rate | `24` |
-| `--render-size N` | Square output render size in pixels | `448` |
-| `--no-render-input-views` | Skip input-view PNGs | Off |
-| `--no-nvs` | Skip novel-view videos | Off |
-| `--no-nvs-depth` | Skip the depth video | Off |
-| `--save-nvs-frames` | Save individual NVS frames | Off |
-| `--no-rgb-pointcloud` | Skip `points_rgb.ply` | Off |
+| `--ply-sh-degree N` | SH degree stored in the PLY (`0–4`) | `3` |
+| `--dc-only` | Export only DC colour coefficients to PLY | Off |
+| `--nvs-between N` | Interpolated viewpoints between adjacent cameras | `10` |
+| `--nvs-fps N` | NVS output frame rate | `24` |
+| `--render-size N` | Square rendering resolution in pixels | `448` |
+| `--no-render-input-views` | Skip per-input-view PNGs | Off |
+| `--no-nvs` | Skip NVS videos | Off |
+| `--no-nvs-depth` | Skip the depth MP4 | Off |
+| `--save-nvs-frames` | Save individual NVS PNGs | Off |
+| `--no-rgb-pointcloud` | Skip the RGB point-cloud export | Off |
 
-For the complete list, run `python demo.py --help`.
+For all options, run `python demo.py --help`.
 
-## Inference notes
+### Gaussian export
 
-- Input images are resized and centre-cropped to **448 × 448** before inference.
-- The NVS camera path interpolates between neighbouring predicted cameras, using rotation SLERP and linear interpolation for translation and intrinsics. **Input ordering matters.**
-- The inference model uses a **VGGT-Omega backbone**, transient/static prediction, and static-aware Gaussian fusion. The released checkpoint's bilateral-grid prediction head is disabled.
-- Camera estimates and reconstructions are produced directly by the model; external camera calibration is not required.
+- **`gaussians.ply`** is the standard Gaussian Splat export, compatible with SuperSplat. It includes position, SH colour coefficients, log-scales, logit opacities and quaternion rotations. The internal renderer uses SH degree 4; the PLY defaults to **degree 3** for broader viewer compatibility.
+- **`points_rgb.ply`** is a conventional point cloud with RGB vertex colours for MeshLab. It is **not** a Gaussian Splat file.
+- The exporter drops invalid and low-opacity Gaussians by default (**opacity < 1/255 ≈ 0.00392**). To prune more aggressively, add `--min-opacity 0.01`. This filter affects exported PLY files **only**; the RGB/depth renders use the full predicted Gaussian set.
 
-## Citation
+### Rendering and model notes
 
-If you use WildAnySplat in your research, please cite:
+The NVS video follows a trajectory interpolated between successive **predicted input camera poses**: SLERP for rotation, linear interpolation for camera translation and intrinsics. Therefore, input order matters. Frames are rendered sequentially to control memory use.
+
+The released model uses a **VGGT-Omega backbone**, predicts transient/static information, and performs static-aware Gaussian fusion. The supplied checkpoint has the **bilateral-grid prediction head disabled**, although bilateral-grid appearance modelling is part of the method described in the paper.
+
+## 📖 Citation
+
+If WildAnySplat is useful to your work, please cite our SIGGRAPH Asia 2026 paper:
 
 ```bibtex
 @inproceedings{shaw2026wildanysplat,
-  author = {Shaw, Richard and Moreau, Arthur and Papaioannou, Athanasios and Tanay, Thomas and Zhang, Zhensong and P{\'{e}}rez-Pellitero, Eduardo},
-  title = {WildAnySplat: Feed-Forward 3D Gaussian Splatting in the Wild},
+  author    = {Shaw, Richard and Moreau, Arthur and Papaioannou, Athanasios and Tanay, Thomas and Zhang, Zhensong and P{\'{e}}rez-Pellitero, Eduardo},
+  title     = {WildAnySplat: Feed-Forward 3D Gaussian Splatting in the Wild},
   booktitle = {SIGGRAPH Asia 2026 Conference Papers},
-  year = {2026},
-  doi = {10.1145/3829340.3842323}
+  year      = {2026},
+  doi       = {10.1145/3829340.3842323}
 }
 ```
 
-## Acknowledgements and licensing
+**[Read the paper (PDF)](https://wildanysplat.github.io/wildanysplat.pdf)** · **[Project website](https://wildanysplat.github.io/)**
 
-WildAnySplat builds on research and code from [AnySplat](https://github.com/OpenRobotLab/AnySplat) and [VGGT-Omega](https://github.com/facebookresearch/vggt-omega). See [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) and the `licenses/` directory for third-party notices and applicable terms. VGGT-Omega components are subject to noncommercial research licensing; check the relevant terms before use or redistribution.
+## 🙏 Acknowledgements and licensing
+
+This work builds on [AnySplat](https://github.com/OpenRobotLab/AnySplat) and [VGGT-Omega](https://github.com/facebookresearch/vggt-omega). Please see [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) and the `licenses/` directory for applicable third-party terms. VGGT-Omega components have noncommercial research licensing restrictions; review their terms before use or redistribution.
+
+---
+
+<p align="center">
+  <a href="https://wildanysplat.github.io/">Project website</a> &nbsp;·&nbsp;
+  <a href="https://wildanysplat.github.io/wildanysplat.pdf">Paper PDF</a> &nbsp;·&nbsp;
+  <a href="https://huggingface.co/richardoshaw/WildAnySplat">Model weights</a>
+</p>
