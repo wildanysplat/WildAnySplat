@@ -3,11 +3,13 @@
 **Feed-Forward 3D Gaussian Splatting in the Wild**  
 *SIGGRAPH Asia 2026*
 
-[Project website](https://wildanysplat.github.io/) · [Paper](https://doi.org/10.1145/3829340.3842323) · [Source code](https://github.com/wildanysplat/WildAnySplat)
+[Project website](https://wildanysplat.github.io/) · [Paper (SIGGRAPH Asia listing)](https://sa2026.conference-schedule.org/presentation/?id=papers_2148&sess=sess109) · [Model weights (Hugging Face)](https://huggingface.co/richardoshaw/WildAnySplat) · [Source code](https://github.com/wildanysplat/WildAnySplat)
 
 WildAnySplat reconstructs a 3D Gaussian representation from multiple images captured under challenging real-world conditions, including transient occluders and changes in appearance. This repository provides a **standalone, inference-only demo** for reconstructing a scene from an image folder or a video, with no training pipeline or dataset setup required.
 
 The demo exports a Gaussian Splat PLY, predicted cameras, rendered input views, and an interpolated novel-view synthesis (NVS) video.
+
+The paper link above currently opens the official SIGGRAPH Asia conference listing; it can be replaced with the ACM article link when the DOI landing page is publicly available.
 
 ## Features
 
@@ -44,14 +46,62 @@ The repository pins `gsplat==1.4.0`. Refer to the [VGGT-Omega repository](https:
 
 ## Model weights
 
-The demo supports either a Hugging Face model repository or locally downloaded weights. The model release should contain:
+The trained WildAnySplat model is hosted on **[Hugging Face: richardoshaw/WildAnySplat](https://huggingface.co/richardoshaw/WildAnySplat)**. This release uses two files:
 
 ```text
-model.safetensors
-inference_config.yaml
+model.safetensors        # Trained model parameters
+inference_config.yaml    # Matching inference architecture configuration
 ```
 
-Use the **matching** inference configuration for the checkpoint. In the examples below, replace the sample input paths with your own files and `YOUR_HF_NAMESPACE` with the published Hugging Face model owner.
+You can let the demo download the files automatically, or download them yourself. **No model weights are stored in the GitHub repository.**
+
+### Option A — Download automatically (recommended)
+
+Pass `--hf-repo richardoshaw/WildAnySplat` to the demo. It fetches `model.safetensors` and `inference_config.yaml` using `huggingface_hub` and caches them locally, so you do not need to manage checkpoint paths:
+
+```bash
+python demo.py \
+  --images /path/to/scene/images \
+  --hf-repo richardoshaw/WildAnySplat \
+  --num-views 12 \
+  --output outputs/scene
+```
+
+The first run downloads the weights; subsequent runs can reuse the Hugging Face cache.
+
+### Option B — Download weights to `checkpoints/`
+
+If you prefer to keep the files inside your project directory, install the Hugging Face CLI and download both files:
+
+```bash
+pip install -U huggingface_hub
+
+hf download richardoshaw/WildAnySplat \
+  model.safetensors inference_config.yaml \
+  --local-dir checkpoints
+```
+
+The resulting layout is:
+
+```text
+WildAnySplat/
+└── checkpoints/
+    ├── model.safetensors
+    └── inference_config.yaml
+```
+
+Then pass the local paths:
+
+```bash
+python demo.py \
+  --images /path/to/scene/images \
+  --checkpoint checkpoints/model.safetensors \
+  --config checkpoints/inference_config.yaml \
+  --num-views 12 \
+  --output outputs/scene
+```
+
+For private or gated Hugging Face repositories, authenticate first with `hf auth login`. Public models do not require login. You can also download the files individually from the [model repository](https://huggingface.co/richardoshaw/WildAnySplat/tree/main).
 
 ## Quick start
 
@@ -60,7 +110,7 @@ Use the **matching** inference configuration for the checkpoint. In the examples
 ```bash
 python demo.py \
   --images examples/scene/images \
-  --hf-repo YOUR_HF_NAMESPACE/WildAnySplat \
+  --hf-repo richardoshaw/WildAnySplat \
   --num-views 12 \
   --output outputs/scene
 ```
@@ -72,25 +122,25 @@ Images are sorted by filename (with natural numeric ordering), and up to `--num-
 ```bash
 python demo.py \
   --video examples/scene.mp4 \
-  --hf-repo YOUR_HF_NAMESPACE/WildAnySplat \
+  --hf-repo richardoshaw/WildAnySplat \
   --num-views 12 \
   --output outputs/video_scene
 ```
 
 Video frames are sampled throughout the clip. For best results, use footage with camera motion around a mostly static scene.
 
-### Use a local checkpoint
+### Use locally downloaded weights
 
 ```bash
 python demo.py \
-  --images examples/scene/images \
+  --images /path/to/scene/images \
   --checkpoint checkpoints/model.safetensors \
   --config checkpoints/inference_config.yaml \
   --num-views 12 \
   --output outputs/local_scene
 ```
 
-If the model is hosted on Hugging Face, `--hf-repo` downloads the matching weight and config files automatically. A CUDA GPU is required for inference.
+Using `--hf-repo` automatically downloads both model files into the Hugging Face cache. A CUDA GPU is required for inference.
 
 ## Outputs
 
@@ -121,7 +171,7 @@ By default, the exporter removes invalid Gaussians and those with opacity below 
 ```bash
 python demo.py \
   --images examples/scene/images \
-  --hf-repo YOUR_HF_NAMESPACE/WildAnySplat \
+  --hf-repo richardoshaw/WildAnySplat \
   --min-opacity 0.01 \
   --output outputs/scene_pruned
 ```
@@ -164,8 +214,7 @@ If you use WildAnySplat in your research, please cite:
   title = {WildAnySplat: Feed-Forward 3D Gaussian Splatting in the Wild},
   booktitle = {SIGGRAPH Asia 2026 Conference Papers},
   year = {2026},
-  doi = {10.1145/3829340.3842323},
-  url = {https://doi.org/10.1145/3829340.3842323}
+  doi = {10.1145/3829340.3842323}
 }
 ```
 
