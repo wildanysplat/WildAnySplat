@@ -1,0 +1,17 @@
+# Install the matching CUDA-enabled PyTorch first, as described in README.md.
+# Install torch-scatter matching PyTorch/CUDA separately (see README).
+# Install VGGT-Omega from its official GitHub repository separately.
+numpy<2
+Pillow>=9
+opencv-python-headless>=4.8
+imageio>=2.31
+imageio-ffmpeg>=0.4.9
+einops>=0.7
+omegaconf>=2.3
+huggingface_hub>=0.25
+safetensors>=0.4
+jaxtyping>=0.2
+plyfile>=1.0
+scipy>=1.10
+# Match the gsplat API used by the original code.
+gsplat==1.4.0

@@ -1,0 +1,33 @@
+# Model checkpoints and inference outputs
+/checkpoints/*
+!/checkpoints/.gitkeep
+
+/outputs/*
+!/outputs/.gitkeep
+
+# Model weights
+*.ckpt
+*.safetensors
+*.pth
+*.pt
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.venv/
+*.egg-info/
+
+# Logs and experiment files
+wandb/
+*.log
+
+# Environment and credentials
+.env
+.env.*
+*.pem
+*.key
+
+# OS files
+.DS_Store

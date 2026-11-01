@@ -1,0 +1,61 @@
+# WildAnySplat inference architecture for epoch_99-step_200000.ckpt.
+# Derived from h200-vggt-omega-all-tm-color.yaml, final run 2026-09-08_14-16-24.
+# Dataset, optimizer, machine paths and the frozen teacher are deliberately omitted.
+# The demo validates keys and tensor shapes and refuses partial loads.
+encoder:
+  name: anysplat
+  vggt_variant: vggt_omega
+  vggt_omega_checkpoint: ""  # unnecessary if full WildAnySplat weights are supplied
+  gs_params_head_type: dpt_gs
+  pred_head_type: depth
+  pose_free: true
+  pred_pose: true
+  pretrained_weights: ""
+  voxel_size: 0.002
+  voxelize: true
+  freeze_backbone: false
+  freeze_backbone_until_iter: 0
+  freeze_module: patch_embed
+  distill: false  # teacher must NOT be constructed for inference
+  offload_distill_to_cpu: false
+  render_conf: false
+  opacity_conf: false
+  conf_threshold: 0.1
+  gs_prune: false
+  gs_prune_mode: batchwise_pad
+  opacity_threshold: 0.001
+  gs_keep_ratio: 1.0
+  intermediate_layer_idx: [4, 11, 17, 23]
+  bilateral_grid: false
+  predict_static: true
+  predict_uncertainty: false
+  fusion_mode: static
+  gaussian_refiner: false
+  gaussian_attention_refiner: false
+  gaussian_adapter:
+    gaussian_scale_min: 0.5
+    gaussian_scale_max: 15.0
+    sh_degree: 4
+    use_2dgs: false
+  opacity_mapping:
+    initial: 0.0
+    final: 0.0
+    warm_up: 1
+  num_monocular_samples: 32
+  num_surfaces: 1
+  gaussians_per_pixel: 1
+  d_feature: 32
+  n_offsets: 2
+  anchor_feat_dim: 128
+  add_view: false
+  apply_bounds_shim: true
+  input_mean: [0.5, 0.5, 0.5]
+  input_std: [0.5, 0.5, 0.5]
+  visualizer:
+    num_samples: 8
+    min_resolution: 256
+    export_ply: false
+decoder:
+  name: splatting_cuda
+  background_color: [1.0, 1.0, 1.0]
+  make_scale_invariant: false
